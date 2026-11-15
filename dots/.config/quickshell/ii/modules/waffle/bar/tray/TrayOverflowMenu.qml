@@ -15,7 +15,7 @@ BarPopup {
 
     closeOnFocusLost: false
     onFocusCleared: {
-        const hasMenuOpen = contentItem.children.some(c => (c.menuOpen));
+        const hasMenuOpen = contentGrid.children.some(c => c.menuOpen === true);
         if (!hasMenuOpen)
             root.close();
         else

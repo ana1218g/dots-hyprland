@@ -37,6 +37,7 @@ Rectangle {
     BarGroupRow {
         id: systemRow
         anchors.right: parent.right
+        WorkspacesButton {}
         Tray {}
         UpdatesButton {}
         SystemButton {}
