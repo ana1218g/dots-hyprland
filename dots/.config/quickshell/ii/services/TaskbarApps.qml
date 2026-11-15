@@ -20,6 +20,17 @@ Singleton {
         }
     }
 
+    function movePinned(appId, toIndex) {
+        const list = Config.options.dock.pinnedApps.slice();
+        const from = list.findIndex(id => id.toLowerCase() === appId.toLowerCase());
+        if (from < 0) return;
+        toIndex = Math.max(0, Math.min(list.length - 1, toIndex));
+        if (from === toIndex) return;
+        const [item] = list.splice(from, 1);
+        list.splice(toIndex, 0, item);
+        Config.options.dock.pinnedApps = list;
+    }
+
     property list<var> apps: {
         var map = new Map();
 
@@ -43,11 +54,12 @@ Singleton {
         // Open windows
         for (const toplevel of ToplevelManager.toplevels.values) {
             if (ignoredRegexes.some(re => re.test(toplevel.appId))) continue;
-            if (!map.has(toplevel.appId.toLowerCase())) map.set(toplevel.appId.toLowerCase(), ({
+            const key = root.matchPinnedKey(map, toplevel.appId);
+            if (!map.has(key)) map.set(key, ({
                 pinned: false,
                 toplevels: []
             }));
-            map.get(toplevel.appId.toLowerCase()).toplevels.push(toplevel);
+            map.get(key).toplevels.push(toplevel);
         }
 
         var values = [];
@@ -68,5 +80,23 @@ Singleton {
     Component {
         id: appEntryComp
         TaskbarAppEntry {}
+    }
+
+    // 起動中ウィンドウの appId を、同じアプリを指すピン留めのキーに寄せる。
+    // 例: ピン留めが "com.vscodium.codium"、ウィンドウが "codium" のとき
+    function matchPinnedKey(map, appId) {
+        const lower = appId.toLowerCase();
+        if (map.has(lower)) return lower;
+
+        const entry = DesktopEntries.heuristicLookup(appId);
+        if (!entry) return lower;
+
+        for (const [key, value] of map) {
+            if (!value.pinned) continue;
+            const pinnedEntry = DesktopEntries.heuristicLookup(key);
+            if (pinnedEntry && pinnedEntry.id === entry.id) return key;
+            if (pinnedEntry?.startupClass && pinnedEntry.startupClass.toLowerCase() === lower) return key;
+        }
+        return lower;
     }
 }

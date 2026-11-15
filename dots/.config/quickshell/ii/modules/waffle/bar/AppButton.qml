@@ -20,9 +20,14 @@ BarButton {
     property real pressedScale: 5/6
 
     onDownChanged: {
-        scaleAnim.duration = root.down ? 150 : 200
-        scaleAnim.easing.bezierCurve = root.down ? Looks.transition.easing.bezierCurve.easeIn : Looks.transition.easing.bezierCurve.easeOut
-        contentItem.scale = root.down ? root.pressedScale : 1 // If/When we do dragging, the scale is 1.25
+        function updateScale() {
+            const active = root.down || root.dragging;
+            scaleAnim.duration = active ? 150 : 200
+            scaleAnim.easing.bezierCurve = active ? Looks.transition.easing.bezierCurve.easeIn : Looks.transition.easing.bezierCurve.easeOut
+            contentItem.scale = root.dragging ? 1.25 : (root.down ? root.pressedScale : 1)
+        }
+        onDownChanged: updateScale()
+        onDraggingChanged: updateScale()
     }
 
     background: Item {
@@ -59,10 +64,14 @@ BarButton {
         implicitHeight: iconWidget.implicitHeight
         implicitWidth: iconWidget.implicitWidth
 
+        scale: root.dragging ? 1.25 : (root.down ? root.pressedScale : 1)
         Behavior on scale {
             NumberAnimation {
-                id: scaleAnim
+                duration: (root.down || root.dragging) ? 150 : 200
                 easing.type: Easing.BezierSpline
+                easing.bezierCurve: (root.down || root.dragging)
+                    ? Looks.transition.easing.bezierCurve.easeIn
+                    : Looks.transition.easing.bezierCurve.easeOut
             }
         }
 

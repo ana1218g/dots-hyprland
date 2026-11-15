@@ -38,4 +38,15 @@ Singleton {
         if (index === -1 || index === pinnedApps.length - 1) return;
         Config.options.launcher.pinnedApps = pinnedApps.slice(0, index).concat(pinnedApps[index + 1]).concat([appId]).concat(pinnedApps.slice(index + 2));
     }
+
+    function movePinned(appId, toIndex) {
+        const list = Config.options.launcher.pinnedApps.slice();
+        const from = list.indexOf(appId);
+        if (from < 0) return;
+        toIndex = Math.max(0, Math.min(list.length - 1, toIndex));
+        if (from === toIndex) return;
+        const [item] = list.splice(from, 1);
+        list.splice(toIndex, 0, item);
+        Config.options.launcher.pinnedApps = list;
+    }
 }

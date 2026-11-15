@@ -32,6 +32,15 @@ AppButton {
     signal hoverPreviewRequested()
     signal hoverPreviewDismissed()
 
+    draggable: appEntry.pinned
+
+    onDraggingChanged: {
+        if (dragging) {
+            root.hoverTimer.stop();
+            root.hoverPreviewDismissed();
+        }
+    }
+
     multiple: appEntry.toplevels.length > 1
     checked: active
     iconName: AppSearch.guessIcon(appEntry.appId)

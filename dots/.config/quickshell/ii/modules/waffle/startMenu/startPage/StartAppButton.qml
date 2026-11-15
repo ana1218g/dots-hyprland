@@ -95,4 +95,46 @@ WButton {
             }
         }
     }
+
+    property bool draggable: false
+    property real shiftX: 0
+    property real shiftY: 0
+    property bool shiftAnimated: true
+    signal dragStarted()
+    signal dragMoved(real cx, real cy) // 親(グリッド)座標系でのドラッグ中アイコンの中心
+    signal dragReleased()
+
+    Behavior on shiftX {
+        enabled: root.shiftAnimated
+        animation: Looks.transition.move.createObject(this)
+    }
+    Behavior on shiftY {
+        enabled: root.shiftAnimated
+        animation: Looks.transition.move.createObject(this)
+    }
+
+    transform: Translate {
+        x: (dragHandler.active ? dragHandler.translation.x : 0) + root.shiftX
+        y: (dragHandler.active ? dragHandler.translation.y : 0) + root.shiftY
+    }
+    z: dragHandler.active ? 100 : 0
+    scale: dragHandler.active ? 1.1 : 1
+    Behavior on scale {
+        animation: Looks.transition.move.createObject(this)
+    }
+
+    DragHandler {
+        id: dragHandler
+        target: null
+        enabled: root.draggable && root.pinnedStart
+        acceptedButtons: Qt.LeftButton
+        onActiveChanged: {
+            if (active) root.dragStarted();
+            else root.dragReleased();
+        }
+        onTranslationChanged: {
+            if (active) root.dragMoved(root.x + root.width / 2 + translation.x, root.y + root.height / 2 + translation.y);
+        }
+    }
 }
+
