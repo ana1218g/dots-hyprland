@@ -12,7 +12,7 @@ AppButton {
 
     required property var appEntry
     readonly property bool isSeparator: appEntry.appId === "SEPARATOR"
-    property var desktopEntry: DesktopEntries.heuristicLookup(appEntry.appId)
+    property var desktopEntry: TaskbarApps.lookupEntry(appEntry.appId)
 
     Timer {
         // Retry looking up the desktop entry if it failed (e.g. database not loaded yet)
@@ -56,6 +56,8 @@ AppButton {
             root.hoverPreviewRequested()
         } else if (root.appEntry.toplevels.length === 1) {
             root.appEntry.toplevels[0].activate()
+        } else if (root.desktopEntry) {
+            root.desktopEntry.execute()
         } else {
             root.desktopEntry.execute()
         }

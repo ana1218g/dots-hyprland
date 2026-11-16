@@ -82,20 +82,35 @@ Singleton {
         TaskbarAppEntry {}
     }
 
-    // 起動中ウィンドウの appId を、同じアプリを指すピン留めのキーに寄せる。
-    // 例: ピン留めが "com.vscodium.codium"、ウィンドウが "codium" のとき
+    // IDやウィンドウのクラスから、デスクトップエントリを探す。
+    // heuristicLookup で見つからなければ、StartupWMClass と Exec のコマンド名でも探す
+    // (例: クラス "codium" → vscodium.desktop の Exec=codium ...)
+    function lookupEntry(appId) {
+        if (!appId) return null;
+        const direct = DesktopEntries.heuristicLookup(appId);
+        if (direct) return direct;
+        const lower = appId.toLowerCase();
+        for (const app of DesktopEntries.applications.values) {
+            if (app.id.toLowerCase() === lower) return app;
+            if (app.startupClass && app.startupClass.toLowerCase() === lower) return app;
+            const cmd = (app.command && app.command.length > 0) ? app.command[0].split("/").pop().toLowerCase() : "";
+            if (cmd === lower) return app;
+        }
+        return null;
+    }
+
+    // 起動中ウィンドウの appId を、同じアプリを指すピン留めのキーに寄せる
     function matchPinnedKey(map, appId) {
         const lower = appId.toLowerCase();
         if (map.has(lower)) return lower;
 
-        const entry = DesktopEntries.heuristicLookup(appId);
+        const entry = lookupEntry(appId);
         if (!entry) return lower;
 
         for (const [key, value] of map) {
             if (!value.pinned) continue;
-            const pinnedEntry = DesktopEntries.heuristicLookup(key);
+            const pinnedEntry = lookupEntry(key);
             if (pinnedEntry && pinnedEntry.id === entry.id) return key;
-            if (pinnedEntry?.startupClass && pinnedEntry.startupClass.toLowerCase() === lower) return key;
         }
         return lower;
     }

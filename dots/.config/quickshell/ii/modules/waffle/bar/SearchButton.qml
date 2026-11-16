@@ -31,14 +31,16 @@ BarButton {
     contentItem: RowLayout {
         spacing: 10
         WAppIcon {
+            Layout.leftMargin: 4
             iconName: "system-search"
             separateLightDark: true
-            implicitSize: 16
+            implicitSize: 18
         }
         WText {
             Layout.fillWidth: true
             text: Translation.tr("Search")
             color: Looks.colors.subfg
+            font.pixelSize: 14
         }
     }
 
