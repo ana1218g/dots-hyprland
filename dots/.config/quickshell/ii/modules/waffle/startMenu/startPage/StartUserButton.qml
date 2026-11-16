@@ -78,7 +78,7 @@ WBorderlessButton {
                         }
                         WText {
                             Layout.alignment: Qt.AlignVCenter
-                            text: "Megahard"
+                            text: "Microsoft"
                             font.pixelSize: Looks.font.pixelSize.large
                             font.weight: Looks.font.weight.strong
                         }
