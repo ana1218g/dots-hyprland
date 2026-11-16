@@ -11,14 +11,14 @@ import qs.modules.waffle.looks
 Item {
     id: root
 
-    // ---- 好みで変えるところ ----
-    property bool showNumbers: false   // true: 空のワークスペースを常に数字にする / false: 点
-    readonly property real cellSize: 24
-    readonly property real iconSize: 18
-    readonly property real padding: 3
-    // ---------------------------
+    readonly property var cfg: Config.options.waffles.bar.workspaces
+    readonly property bool showNumbers: cfg.showNumbers
+    readonly property real cellSize: cfg.cellSize
+    readonly property real iconSize: cfg.iconSize
+    readonly property real padding: cfg.padding
+    readonly property int shownCount: cfg.shownCount
 
-    readonly property int shownCount: 10
+    visible: cfg.show
     readonly property HyprlandMonitor monitor: Hyprland.monitorFor(root.QsWindow.window?.screen)
     readonly property int activeWorkspace: monitor?.activeWorkspace?.id ?? 1
     readonly property int group: Math.max(0, Math.floor((activeWorkspace - 1) / shownCount))

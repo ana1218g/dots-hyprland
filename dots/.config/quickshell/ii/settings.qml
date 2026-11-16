@@ -22,7 +22,7 @@ ApplicationWindow {
     property string firstRunFileContent: "This file is just here to confirm you've been greeted :>"
     property real contentPadding: 8
     property bool showNextTime: false
-    property var pages: [
+    property var basePages: [
         {
             name: Translation.tr("Quick"),
             icon: "instant_mix",
@@ -65,6 +65,18 @@ ApplicationWindow {
             component: "modules/settings/About.qml"
         }
     ]
+    property var pages: {
+        const list = basePages.slice();
+        const forced = Quickshell.env("SETTINGS_PAGE") === "WaffleConfig";
+        if (forced || (Config.options.settingsApp?.waffleTab ?? false)) {
+            list.splice(list.length - 2, 0, {
+                name: Translation.tr("Waffle"),
+                icon: "grid_view",
+                component: "modules/settings/WaffleConfig.qml"
+            });
+        }
+        return list;
+    }
     property int currentPage: 0
 
     visible: true
@@ -74,6 +86,13 @@ ApplicationWindow {
     Component.onCompleted: {
         MaterialThemeLoader.reapplyTheme()
         Config.readWriteDelay = 0 // Settings app always only sets one var at a time so delay isn't needed
+
+        // 環境変数 SETTINGS_PAGE が指すページを、最初に開く
+        const wanted = Quickshell.env("SETTINGS_PAGE") || "";
+        if (wanted) {
+            const index = pages.findIndex(p => p.component.endsWith(wanted + ".qml"));
+            if (index >= 0) currentPage = index;
+        }
     }
 
     minimumWidth: 750

@@ -35,7 +35,8 @@ Scope {
             anchors {
                 bottom: Config.options.waffles.bar.bottom
                 top: !Config.options.waffles.bar.bottom
-                left: Config.options.waffles.bar.leftAlignApps
+                left: Config.options.waffles.bar.alignment === "left"
+                right: Config.options.waffles.bar.alignment === "right"
             }
 
             implicitWidth: content.implicitWidth

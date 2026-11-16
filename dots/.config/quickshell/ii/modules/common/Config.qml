@@ -234,6 +234,7 @@ Singleton {
                     }
                 }
                 property bool bottom: false // Instead of top
+                property bool leftAlignApps: false
                 property int cornerStyle: 0 // 0: Hug | 1: Float | 2: Plain rectangle
                 property bool floatStyleShadow: true // Show shadow behind bar when cornerStyle == 1 (Float)
                 property bool borderless: false // true for no grouping of items
@@ -592,6 +593,10 @@ Singleton {
                 property bool centerTitle: true
             }
 
+            property JsonObject settingsApp: JsonObject {
+                property bool waffleTab: false // experimental
+            }
+
             property JsonObject hacks: JsonObject {
                 property int arbitraryRaceConditionDelay: 20 // milliseconds
             }
@@ -620,6 +625,15 @@ Singleton {
                 property JsonObject bar: JsonObject {
                     property bool bottom: true
                     property bool leftAlignApps: true
+                    property string alignment: "left" // "left" | "center" | "right"
+                    property JsonObject workspaces: JsonObject {
+                        property bool show: true
+                        property bool showNumbers: false
+                        property int shownCount: 10
+                        property int cellSize: 24
+                        property int iconSize: 18
+                        property int padding: 3
+                    }
                 }
                 property JsonObject actionCenter: JsonObject {
                     property list<string> toggles: [ "network", "bluetooth", "easyEffects", "powerProfile", "idleInhibitor", "nightLight", "darkMode", "antiFlashbang", "cloudflareWarp", "mic", "musicRecognition", "notifications", "onScreenKeyboard", "gameMode", "screenSnip", "colorPicker" ]
